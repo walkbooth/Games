@@ -3,6 +3,7 @@ class Tile:
     def __init__(self):
         self._adj_bombs = 0
         self._revealed = False
+        self._flagged = False 
 
     def is_bomb(self):
         if self._adj_bombs < 0:
@@ -10,8 +11,16 @@ class Tile:
         else:
             return False
 
-    def get_num_adj_bombs(self):
+    @property
+    def adj_bombs(self):
         return self._adj_bombs
+
+    @property 
+    def flagged(self):
+        return self._flagged
+
+    def set_flag(self, status):
+        self._flagged = status 
 
     def add_adj_bomb(self):
         self._adj_bombs += 1
@@ -19,16 +28,21 @@ class Tile:
     def convert_to_bomb(self):
         self._adj_bombs -= 9
 
-    def is_revealed(self):
+    @property
+    def revealed(self):
         return self._revealed
 
     def reveal(self):
-        self.revealed = True
+        self._revealed = True
 
     def to_s(self):
-        if self.revealed:
+        if self._flagged:
+            return "!"
+        elif self._revealed:
             if self._adj_bombs < 0:
-                return "!"
+                return "B"
+            elif self._adj_bombs == 0:
+                return "_"
             else: 
                 return str(self._adj_bombs)
         else:
