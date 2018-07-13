@@ -19,8 +19,8 @@ class Tile:
     def flagged(self):
         return self._flagged
 
-    def set_flag(self, status):
-        self._flagged = status 
+    def set_flag(self):
+        self._flagged = not self._flagged 
 
     def add_adj_bomb(self):
         self._adj_bombs += 1
@@ -34,6 +34,7 @@ class Tile:
 
     def reveal(self):
         self._revealed = True
+        return self.is_bomb()
 
     def to_s(self):
         if self._flagged:

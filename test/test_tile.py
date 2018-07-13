@@ -1,18 +1,18 @@
 import unittest 
 import os 
 import sys
-import src.tile as tile
+from src import tile
 
 class testTile(unittest.TestCase):
 
     def test_behavior(self):
         tile1 = tile.Tile() 
 
-        tile1.set_flag(True)
+        tile1.set_flag()
         self.assertTrue(tile1.flagged)
         self.assertEqual("!", tile1.to_s())
 
-        tile1.set_flag(False)
+        tile1.set_flag()
         self.assertFalse(tile1.flagged)
         self.assertEqual("*", tile1.to_s())
 
