@@ -29,7 +29,7 @@ class Grid ():
         # Locate and place bombs, excluding first tile from the potential bomb spots 
         valid_spots = set(range(0, self._width * self._height))
         if not x == None and not y == None:
-            upper_left = y * self._width + x 
+            upper_left = (y - 1) * self._width + x - 1 
             valid_spots -= set(range(upper_left, upper_left + 3) + 
                                range(upper_left + self._width, upper_left + self._width + 3) + 
                                range(upper_left + 2 * self._width, upper_left + 2 * self._width + 3))    
@@ -127,8 +127,14 @@ class Grid ():
     @return string the string representation of this grid object 
     """
     def to_s(self):
-        s = ""
+        s = "    "
+        for x in range(0, self._width): s += str(x+1) + " "
+        s += "\n    "
+        for x in range(0, self._width): s += "--"
+        s += "\n"
+        
         for y in range(0, len(self._grid_array)):
+            s += str(y+1) + "|  "
             for x in range(0, len(self._grid_array[y])):
                 s += self._grid_array[y][x].to_s() + " "
             s += "\n"

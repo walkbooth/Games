@@ -81,7 +81,6 @@ class testTile(unittest.TestCase):
         self.assertEqual("1 1 _ \n! 3 2 \n2 * * \n", gridCustom2.to_s())
         self.assertEqual(1, gridCustom2.game_state())
 
-
         gridCustom3 = grid.Grid(3, 3, 3)
         self.assertTrue(gridCustom3.reveal_tile(1, 1))
         self.assertEqual("* * * \n* B * \n* * * \n", gridCustom3.to_s())
@@ -113,6 +112,10 @@ class testTile(unittest.TestCase):
         self.assertFalse(gridCustom5.reveal_tile(0, 3))
         self.assertEqual(1, gridCustom5.game_state())        
         self.assertEqual("_ _ 1 1 \n_ _ 2 * \n1 1 4 * \n1 * 3 * \n", gridCustom5.to_s())
+
+        game_grid = grid.Grid(8, 8, 25, 3, 3)
+        self.assertEqual("* * * * \n* * * * \n* * * * \n* * * * \n* * * * \n* * * * \n* * * * \n* * * * \n", game_grid.to_s())
+
 
 if __name__ == '__main__':
     unittest.main()
