@@ -1,3 +1,4 @@
-width: 9
-height: 9
-bombs: 25
+width: 9                  # Width of the grid 
+height: 9                 # Height of the grid 
+bombs: 25                 # Number of bombs to spawn in grid 
+default_ui: "gui"     # Type of ui: console | gui

@@ -1,4 +1,4 @@
-# v1.0
+# v1.1
 import grid 
 import yaml
 import os 
@@ -21,24 +21,12 @@ def plain_grid(width, height):
     print s
 
 """
-Game logic, i/o for a standard game of minesweeper
-Preconditions:
-    - util/config.yaml contains configuration parameters, such as grid dimensions and number of bombs.
+Console output version of minesweeper, introduced in v1.0
+@param width the width of the grid 
+@param height the height of the grid 
+@param bombs the number of bombs to spawn in the grid 
 """
-def main():
-
-    # Parse util/config.yaml for game settings 
-    game_settings = {}
-    with open("util/config.yaml", 'r') as stream:
-        try:
-            game_settings = yaml.load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    width = int(game_settings['width'])
-    height = int(game_settings['height'])
-    bombs = int(game_settings['bombs'])
-
+def launch_console(width, height, bombs):
     # Begin program
     os.system('cls' if os.name == 'nt' else 'clear')
     plain_grid(width, height)
@@ -87,6 +75,36 @@ def main():
         print "You win!"
     elif game_grid.game_state() == -1:
         print "You lose :("
+
+def launch_gui(width, height, bombs):
+    print "Insert gui here"
+
+"""
+Game logic, i/o for a standard game of minesweeper
+Preconditions:
+    - util/config.yaml contains configuration parameters, such as grid dimensions and number of bombs.
+"""
+def main():
+
+    # Parse util/config.yaml for game settings 
+    game_settings = {}
+    with open("util/config.yaml", 'r') as stream:
+        try:
+            game_settings = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    width = int(game_settings['width'])
+    height = int(game_settings['height'])
+    bombs = int(game_settings['bombs'])
+    ui_type = game_settings['default_ui']
+
+    if ui_type == "console":
+        launch_console(width, height, bombs)
+    elif ui_type == "gui":
+        launch_gui(width, height, bombs)
+    else:
+        print "Invalid UI specifications in util/config.yaml. Please specify either console or gui."
 
 # Standard python script boilerplate, calls main method 
 if __name__ == '__main__':
