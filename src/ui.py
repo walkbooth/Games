@@ -2,6 +2,11 @@
 import grid 
 import yaml
 import os 
+import Tkinter as tkinter 
+import tkMessageBox
+
+def helloCallBack():
+   tkMessageBox.showinfo( "Hello Python", "Hello World")
 
 """
 Creates an example, clean grid matching the specified dimenions
@@ -77,18 +82,25 @@ def launch_console(width, height, bombs):
         print "You lose :("
 
 def launch_gui(width, height, bombs):
-    print "Insert gui here"
+    print "Launching GUI"
+    window = tkinter.Tk(className="v1.1 Walker's Minesweeper")
+    
+    resetButton = tkinter.Button(window, text = "Reset", command = helloCallBack)
+    flagToggle = tkinter.Button(window, text = "Flag", command = helloCallBack)
+    resetButton.pack(side = "left")
+    flagToggle.pack(side = "right")
+    window.mainloop()
 
 """
 Game logic, i/o for a standard game of minesweeper
 Preconditions:
-    - util/config.yaml contains configuration parameters, such as grid dimensions and number of bombs.
+    - util/config.yml contains configuration parameters, such as grid dimensions and number of bombs.
 """
 def main():
 
-    # Parse util/config.yaml for game settings 
+    # Parse util/config.yml for game settings 
     game_settings = {}
-    with open("util/config.yaml", 'r') as stream:
+    with open("util/config.yml", 'r') as stream:
         try:
             game_settings = yaml.load(stream)
         except yaml.YAMLError as exc:
