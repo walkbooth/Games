@@ -2,11 +2,6 @@
 import grid 
 import yaml
 import os 
-import Tkinter as tkinter 
-import tkMessageBox
-
-def helloCallBack():
-   tkMessageBox.showinfo( "Hello Python", "Hello World")
 
 """
 Creates an example, clean grid matching the specified dimenions
@@ -23,7 +18,7 @@ def plain_grid(width, height):
             x += 1
         y += 1 
         s += "\n"
-    print s
+    print (s)
 
 """
 Console output version of minesweeper, introduced in v1.0
@@ -37,7 +32,7 @@ def launch_console(width, height, bombs):
     plain_grid(width, height)
 
     # Get input values and convert to a 0-based array 
-    x, y = str.split(raw_input("Enter a coordinate to reveal in the form 'x y': "))
+    x, y = str.split(input("Enter a coordinate to reveal in the form 'x y': "))
     x = int(x) - 1
     y = int(y) - 1
 
@@ -53,16 +48,16 @@ def launch_console(width, height, bombs):
     while game_grid.game_state() == 0:
         
         # Get input and convert to a 0-based array 
-        action, x, y = str.split(raw_input("Enter a coordinate and an action in the form 'action x y' where action = reveal | flag: "))
+        action, x, y = str.split(input("Enter a coordinate and an action in the form 'action x y' where action = reveal | flag: "))
         x = int(x) - 1
         y = int(y) - 1
 
         # Branch based on action 
         if action == "reveal":
-            print "Revealing..."
+            print ("Revealing...")
             game_grid.reveal_tile(x, y)
         elif action == "flag":
-            print "Flagging..."
+            print ("Flagging...")
             game_grid.flag_tile(x, y)
         else: 
             print("Invalid action, please try again.")
@@ -77,19 +72,9 @@ def launch_console(width, height, bombs):
     os.system('cls' if os.name == 'nt' else 'clear')
     print(game_grid.to_s())
     if game_grid.game_state() == 1: 
-        print "You win!"
+        print ("You win!")
     elif game_grid.game_state() == -1:
-        print "You lose :("
-
-def launch_gui(width, height, bombs):
-    print "Launching GUI"
-    window = tkinter.Tk(className="v1.1 Walker's Minesweeper")
-    
-    resetButton = tkinter.Button(window, text = "Reset", command = helloCallBack)
-    flagToggle = tkinter.Button(window, text = "Flag", command = helloCallBack)
-    resetButton.pack(side = "left")
-    flagToggle.pack(side = "right")
-    window.mainloop()
+        print ("You lose :(")
 
 """
 Game logic, i/o for a standard game of minesweeper
@@ -109,14 +94,8 @@ def main():
     width = int(game_settings['width'])
     height = int(game_settings['height'])
     bombs = int(game_settings['bombs'])
-    ui_type = game_settings['default_ui']
-
-    if ui_type == "console":
-        launch_console(width, height, bombs)
-    elif ui_type == "gui":
-        launch_gui(width, height, bombs)
-    else:
-        print "Invalid UI specifications in util/config.yaml. Please specify either console or gui."
+    
+    launch_console(width, height, bombs)
 
 # Standard python script boilerplate, calls main method 
 if __name__ == '__main__':

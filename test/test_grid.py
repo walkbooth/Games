@@ -1,10 +1,11 @@
 import unittest 
 import os 
 import sys
+from context import src 
 from src import grid
 import random 
 from random import Random 
-from mock import patch 
+from unittest.mock import patch 
 class testTile(unittest.TestCase):
 
     def setUp(self):

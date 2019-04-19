@@ -1,7 +1,8 @@
 import unittest 
 import os 
 import sys
-from src import tile
+from context import src 
+from src import tile 
 
 class testTile(unittest.TestCase):
 
