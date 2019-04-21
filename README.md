@@ -7,4 +7,6 @@
 
 ### MacOS/UNIX Distributions
 
+## Running the game
+
 Play minesweeper by executing the softlink `minesweeper`. 
