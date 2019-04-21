@@ -1,7 +1,23 @@
-# v1.1
+# v1.0
 import grid 
 import yaml
-import os 
+import os
+
+"""
+Gets a character or arrow key input from user. Thanks to Newb for the answer here: 
+https://stackoverflow.com/questions/22397289/finding-the-values-of-the-arrow-keys-in-python-why-are-they-triples
+"""
+def getchar():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+            if (ch == '\x1b'):
+                ch = sys.stdin.read(2)
+    finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
 
 """
 Creates an example, clean grid matching the specified dimenions

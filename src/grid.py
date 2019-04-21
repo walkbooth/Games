@@ -1,6 +1,9 @@
 import tile
 import random
 
+RED = "\033[1;31;40m"
+NORMAL = "\033[1;37;40m"
+
 class Grid ():
 
     """
@@ -21,11 +24,13 @@ class Grid ():
 
     """
     Helper function to randomly generate valid locations for bombs based on game configuration. 
-    @param x the x coordinate of a 'safe tile' 
-    @param y the y coordinate of a 'safe tile'
     @return bombs a list of valid locations for bombs to be placed in the grid 
     """ 
-    def _generate_bomb_locations(self, x, y):
+    def _generate_bomb_locations(self):
+
+        x = self._selected["x"]
+        y = self._selected["y"]
+
         # Locate and place bombs, excluding first tile from the potential bomb spots 
         valid_spots = set(range(0, self._width * self._height))
         if not x == None and not y == None:
@@ -43,12 +48,8 @@ class Grid ():
     @param width the width of the grid
     @param height the height of the grid 
     @param num_bombs the number of bombs to place in the grid 
-    @param first_x the x coordinate of the first tile to reveal, guaranteed to be vacant. If not 
-                   provided, a full grid will be generated with no revealed tiles. 
-    @param first_y the y coordinate of the first tile to reveal, guaranteed to be vacant. If not 
-                   provided, a full grid will be generated with no revealed tiles.
     """
-    def __init__ (self, width, height, num_bombs, first_x = None, first_y = None):  
+    def __init__ (self, width, height, num_bombs):  
         
         # Validate arguments
         try:
@@ -64,17 +65,22 @@ class Grid ():
         self._revealed_tiles = 0
         self._num_bombs = num_bombs 
         self._uncovered_bomb = False
+        self._selected = {"x": 0, "y": 0}
        
         # Iterate over grid, placing bombs and notifying tiles next to each bomb 
         for y in range(0, self._height):
             self._grid_array.append([])
             for x in range(0, self._width):
                 self._grid_array[y].append(tile.Tile())
-            
-        bomb_spots = self._generate_bomb_locations(first_x, first_y)
+
+    """
+    Spawns bombs with selected tile as a "safe selection"
+    """
+    def begin(self):
+        bomb_spots = self._generate_bomb_locations()
         for bomb_spot in bomb_spots:
-            y = int(bomb_spot / height)
-            x = int(bomb_spot % height)
+            y = int(bomb_spot / self._height)
+            x = int(bomb_spot % self._height)
             self._grid_array[y][x].convert_to_bomb()
             self._notify_adj_tiles(x, y)
 
@@ -88,12 +94,27 @@ class Grid ():
 
     """
     Reveals a tile in the grid. 
-    @param x the x coordinate of the tile to reveal 
-    @param y the y coordinate of the tile to reveal 
     @return true if a bomb was uncovered, false if not 
     """
-    def reveal_tile(self, x, y):
-        uncovered_tile = self._get_tile(x, y)
+    def reveal_tile(self, x = None, y = None):
+        
+        # Default to selected tile 
+        if ( x == None and y == None):
+            uncovered_tile = self._get_selected_tile()
+            x = self._selected["x"]
+            y = self._selected["y"]
+        else: 
+            uncovered_tile = self._get_tile(x, y)
+
+        # Spawns bombs with selected tile as "safe selection"
+        if (self._revealed_tiles == 0):
+            self.begin()
+        
+        # Do not reveal a tile that is already revealed 
+        if ( uncovered_tile.revealed ):
+            return False 
+
+        # Reveal selected tile, recording if the tile is a bomb, and incremend revealed tiles 
         is_bomb = uncovered_tile.reveal()
         self._revealed_tiles += 1 
 
@@ -114,31 +135,54 @@ class Grid ():
         return is_bomb
 
     """
-    Flags/unflags a tile in the grid. 
-    @param x the x coordinate of the tile to flag 
-    @param y the y coordinate of the tile to flag 
+    Flags/unflags selected tile in the grid. 
     @param status true if flag, false if unflag
     """
-    def flag_tile(self, x, y):
-        self._get_tile(x, y).set_flag()
+    def flag_tile(self):
+        self._get_selected_tile().set_flag()
+
+    def up(self):
+        if ( self._selected["y"] > 0 ):
+            self._selected["y"] -= 1
+
+    def down(self):
+        if ( self._selected["y"] < self._height - 1 ):
+            self._selected["y"] += 1
+
+    def left(self):
+        if ( self._selected["x"] > 0 ):
+            self._selected["x"] -= 1
+
+    def right(self):
+        if ( self._selected["x"] < self._width - 1 ):
+            self._selected["x"] += 1
 
     """
     Returns this grid object as a string. 
     @return string the string representation of this grid object 
     """
     def to_s(self):
-        s = "    "
-        for x in range(0, self._width): s += str(x+1) + " "
-        s += "\n    "
-        for x in range(0, self._width): s += "--"
-        s += "\n"
-        
+        s = ""
         for y in range(0, len(self._grid_array)):
-            s += str(y+1) + "|  "
             for x in range(0, len(self._grid_array[y])):
-                s += self._grid_array[y][x].to_s() + " "
+                if ( x == self._selected["x"] and y == self._selected["y"]):
+                    s += RED + self._grid_array[y][x].to_s() + NORMAL + " " 
+                else: 
+                    s += self._grid_array[y][x].to_s() + " "
             s += "\n"
         return s 
+
+    """
+    Wrapper around access to grid, more strict throwing of index errors.
+    @raises IndexError if provided indices are invalid  
+    @return found_tile the tile at provided coordinates 
+    """
+    def _get_selected_tile(self):
+        x = self._selected["x"]
+        y = self._selected["y"]
+        if x < 0 or x >= self._width or y < 0 or y >= self._height:
+            raise IndexError("Indices provided are out of range")
+        return self._grid_array[y][x]
 
     """
     Wrapper around access to grid, more strict throwing of index errors.
