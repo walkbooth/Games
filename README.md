@@ -2,6 +2,8 @@
 
 ## Requirements
 * python3 
+* pip3
+* yaml (pip3 install PyYAML)
 
 ### Windows
 

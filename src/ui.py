@@ -1,4 +1,5 @@
-# v1.0
+import sys, termios, tty 
+# v1.1
 import grid 
 import yaml
 import os
@@ -19,73 +20,91 @@ def getchar():
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     return ch
 
-"""
-Creates an example, clean grid matching the specified dimenions
-@param width the width of the example grid 
-@param height the height of the example grid 
-"""
-def plain_grid(width, height):
-    s = ""
-    y = 0
-    while y < height:
-        x = 0
-        while x < width:
-            s += "* "
-            x += 1
-        y += 1 
-        s += "\n"
-    print (s)
+def reveal(grid):
+    grid.reveal_tile()
+    return ""
 
-"""
-Console output version of minesweeper, introduced in v1.0
-@param width the width of the grid 
-@param height the height of the grid 
-@param bombs the number of bombs to spawn in the grid 
-"""
+def flag(grid):
+    grid.flag_tile()
+    return ""
+
+def up(grid):
+    grid.up()
+    return ""
+
+def down(grid):
+    grid.down()
+    return ""    
+
+def left(grid):    
+    grid.left()
+    return ""
+
+def right(grid):  
+    grid.right() 
+    return "" 
+
+def leave(grid):
+    exitpoint()
+
+def invalid(grid):
+    return "Invalid option selected: options are r|f|q or arrow keys"
+
+def clearscreen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def exitpoint():
+    print("Press any key to continue... \033[1;0;0m")
+    getchar()
+    clearscreen()
+    exit(0)
+
+options = {
+    "r": reveal,
+    "f": flag, 
+    "q": leave, 
+    "[A": up,
+    "[B": down,
+    "[C": right,
+    "[D": left
+}
+
 def launch_console(width, height, bombs):
-    # Begin program
-    os.system('cls' if os.name == 'nt' else 'clear')
-    plain_grid(width, height)
+    # Set game color
+    print("\033[1;37;40m")
+    clearscreen()
 
-    # Get input values and convert to a 0-based array 
-    x, y = str.split(input("Enter a coordinate to reveal in the form 'x y': "))
-    x = int(x) - 1
-    y = int(y) - 1
+    # Initialize and print grid 
+    print()
+    game_grid = grid.Grid(width, height, bombs)
+    print( game_grid.to_s() )
 
-    # Safe reveal first tile 
-    game_grid = grid.Grid(width, height, bombs, x, y)
-    game_grid.reveal_tile(x, y)
-    
-    # Clear screen and print new grid after change
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(game_grid.to_s())
+    # Selection for first tile 
+    option = None  
+    while option != "r":
 
-    # Game flow loop
+        option = getchar()
+        clearscreen()
+
+        func = options.get(option, invalid)
+        print ( func(game_grid) )
+        print ( game_grid.to_s() )
+
+    # Remainder of game
     while game_grid.game_state() == 0:
         
         # Get input and convert to a 0-based array 
-        action, x, y = str.split(input("Enter a coordinate and an action in the form 'action x y' where action = reveal | flag: "))
-        x = int(x) - 1
-        y = int(y) - 1
+        option = getchar()
 
-        # Branch based on action 
-        if action == "reveal":
-            print ("Revealing...")
-            game_grid.reveal_tile(x, y)
-        elif action == "flag":
-            print ("Flagging...")
-            game_grid.flag_tile(x, y)
-        else: 
-            print("Invalid action, please try again.")
-            continue
-        
-        # Clear screen and print new grid after change
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print(game_grid.to_s())
+        clearscreen()
+
+        func = options.get(option, invalid)
+        print ( func(game_grid) )
+        print ( game_grid.to_s() )
 
     # End game 
     game_grid.reveal_all()
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clearscreen()
     print(game_grid.to_s())
     if game_grid.game_state() == 1: 
         print ("You win!")
@@ -107,12 +126,19 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
 
+    # Import settings into variables 
     width = int(game_settings['width'])
     height = int(game_settings['height'])
     bombs = int(game_settings['bombs'])
     
+    # Start the game
     launch_console(width, height, bombs)
+
+    # Exit the game 
+    exitpoint()
 
 # Standard python script boilerplate, calls main method 
 if __name__ == '__main__':
     main()
+
+        
