@@ -79,9 +79,9 @@ class Grid ():
     def begin(self):
         bomb_spots = self._generate_bomb_locations()
         for bomb_spot in bomb_spots:
-            y = int(bomb_spot / self._height)
-            x = int(bomb_spot % self._height)
-            self._grid_array[y][x].convert_to_bomb()
+            x = int(bomb_spot / self._height)
+            y = int(bomb_spot % self._height)
+            self._get_tile(x, y).convert_to_bomb()
             self._notify_adj_tiles(x, y)
 
     """
