@@ -54,8 +54,8 @@ def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def exitpoint():
-    print("Press any key to continue... \033[1;0;0m")
-    getchar()
+    print("Press enter to continue... \033[1;0;0m")
+    input()
     clearscreen()
     exit(0)
 
@@ -79,6 +79,9 @@ def launch_console(width, height, bombs):
     game_grid = grid.Grid(width, height, bombs)
     print( game_grid.to_s() )
 
+    print ("\nNumber of Bombs: " + str(bombs))
+    print ("Flags Placed: " + str(game_grid.flags_placed))
+
     # Selection for first tile 
     option = None  
     while option != "r":
@@ -89,6 +92,9 @@ def launch_console(width, height, bombs):
         func = options.get(option, invalid)
         print ( func(game_grid) )
         print ( game_grid.to_s() )
+
+        print ("\nNumber of Bombs: " + str(bombs))
+        print ("Flags Placed: " + str(game_grid.flags_placed))
 
     # Remainder of game
     while game_grid.game_state() == 0:
@@ -101,6 +107,9 @@ def launch_console(width, height, bombs):
         func = options.get(option, invalid)
         print ( func(game_grid) )
         print ( game_grid.to_s() )
+
+        print ("\nNumber of Bombs: " + str(bombs))
+        print ("Flags Placed: " + str(game_grid.flags_placed))
 
     # End game 
     game_grid.reveal_all()

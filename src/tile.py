@@ -19,8 +19,12 @@ class Tile:
     def flagged(self):
         return self._flagged
 
+    """
+    Flags/unflags this tile, returning the current state of the tile
+    """
     def set_flag(self):
         self._flagged = not self._flagged 
+        return self._flagged
 
     def add_adj_bomb(self):
         self._adj_bombs += 1

@@ -3,6 +3,15 @@ import random
 
 RED = "\033[1;31;40m"
 NORMAL = "\033[1;37;40m"
+GREEN = "\033[1;32;40m"
+YELLOW = "\033[1;33;40m"
+
+COLOR_MAP = {
+    "B": RED,
+    "_": GREEN,
+    "!": RED,
+    "*": NORMAL
+}
 
 class Grid ():
 
@@ -66,6 +75,7 @@ class Grid ():
         self._num_bombs = num_bombs 
         self._uncovered_bomb = False
         self._selected = {"x": 0, "y": 0}
+        self.flags_placed = 0
        
         # Iterate over grid, placing bombs and notifying tiles next to each bomb 
         for y in range(0, self._height):
@@ -135,11 +145,21 @@ class Grid ():
         return is_bomb
 
     """
-    Flags/unflags selected tile in the grid. 
+    Returns "unplaced" flags
+    """
+    def unflagged_bombs(self):
+        return self._num_bombs - self.flags_placed
+
+    """
+    Flags/unflags selected tile in the grid, incrementing flags placed if the operation was a "flag" 
+    operation and decrementing it if it was an "unflag" operation
     @param status true if flag, false if unflag
     """
     def flag_tile(self):
-        self._get_selected_tile().set_flag()
+        if self._get_selected_tile().set_flag():
+            self.flags_placed += 1
+        else: 
+            self.flags_placed -= 1
 
     def up(self):
         if ( self._selected["y"] > 0 ):
@@ -165,10 +185,11 @@ class Grid ():
         s = ""
         for y in range(0, len(self._grid_array)):
             for x in range(0, len(self._grid_array[y])):
+                grid_contents = self._grid_array[y][x].to_s()
                 if ( x == self._selected["x"] and y == self._selected["y"]):
-                    s += RED + self._grid_array[y][x].to_s() + NORMAL + " " 
+                    s += RED + grid_contents + NORMAL + " " 
                 else: 
-                    s += self._grid_array[y][x].to_s() + " "
+                    s += COLOR_MAP.get(grid_contents, YELLOW) + grid_contents + NORMAL + " "
             s += "\n"
         return s 
 
