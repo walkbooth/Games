@@ -5,6 +5,7 @@ RED = "\033[1;31;40m"
 NORMAL = "\033[1;37;40m"
 GREEN = "\033[1;32;40m"
 YELLOW = "\033[1;33;40m"
+BLUE = "\033[1;34;40m"
 
 COLOR_MAP = {
     "B": RED,
@@ -25,7 +26,7 @@ class Grid ():
         for rows in range(y-1, y+2):
             for cols in range(x-1, x+2):
                 if (cols != x or rows != y):
-                    # If a tile is not valid, ignore and continue 
+                    # If a tile is outside of grid, ignore and continue 
                     try:
                         self._get_tile(cols, rows).add_adj_bomb()
                     except IndexError:
@@ -100,7 +101,11 @@ class Grid ():
     def reveal_all(self):
         for y in range(0, self._height):
             for x in range(0, self._width):
-                self._grid_array[y][x].reveal()
+                # Move on if tile is already flagged
+                try:
+                    self._grid_array[y][x].reveal()
+                except ValueError:
+                    continue
 
     """
     Reveals a tile in the grid. 
@@ -125,7 +130,12 @@ class Grid ():
             return False 
 
         # Reveal selected tile, recording if the tile is a bomb, and incremend revealed tiles 
-        is_bomb = uncovered_tile.reveal()
+        # A ValueError is caught here if the tile is flagged and should not be revealed
+        try:
+            is_bomb = uncovered_tile.reveal()
+        except ValueError:
+            return
+
         self._revealed_tiles += 1 
 
         # Chain reveal if unveiled tile has no value 
@@ -133,7 +143,7 @@ class Grid ():
             for rows in range(y-1, y+2):
                 for cols in range(x-1, x+2):
                     if (cols != x or rows != y):
-                        # If a tile is not valid, ignore and continue 
+                        # If a tile is outside of grid, ignore and continue 
                         try:
                             if not self._get_tile(cols, rows).revealed:
                                 self.reveal_tile(cols, rows)
@@ -156,10 +166,15 @@ class Grid ():
     @param status true if flag, false if unflag
     """
     def flag_tile(self):
-        if self._get_selected_tile().set_flag():
-            self.flags_placed += 1
-        else: 
-            self.flags_placed -= 1
+        
+        # A value error will be caught here if the tile has already been revealed
+        try:
+            if self._get_selected_tile().set_flag():
+                self.flags_placed += 1
+            else: 
+                self.flags_placed -= 1
+        except ValueError:
+            return
 
     def up(self):
         if ( self._selected["y"] > 0 ):
@@ -186,8 +201,8 @@ class Grid ():
         for y in range(0, len(self._grid_array)):
             for x in range(0, len(self._grid_array[y])):
                 grid_contents = self._grid_array[y][x].to_s()
-                if ( x == self._selected["x"] and y == self._selected["y"]):
-                    s += RED + grid_contents + NORMAL + " " 
+                if x == self._selected["x"] and y == self._selected["y"]:
+                    s += BLUE + grid_contents + NORMAL + " " 
                 else: 
                     s += COLOR_MAP.get(grid_contents, YELLOW) + grid_contents + NORMAL + " "
             s += "\n"

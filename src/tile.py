@@ -23,8 +23,11 @@ class Tile:
     Flags/unflags this tile, returning the current state of the tile
     """
     def set_flag(self):
-        self._flagged = not self._flagged 
-        return self._flagged
+        if not self._revealed:    
+            self._flagged = not self._flagged 
+            return self._flagged
+        else:
+            raise ValueError("Tile has already been revealed")
 
     def add_adj_bomb(self):
         self._adj_bombs += 1
@@ -37,8 +40,11 @@ class Tile:
         return self._revealed
 
     def reveal(self):
-        self._revealed = True
-        return self.is_bomb()
+        if not self._flagged:
+            self._revealed = True
+            return self.is_bomb()
+        else:
+            raise ValueError("Tile is flagged")        
 
     def to_s(self):
         if self._flagged:

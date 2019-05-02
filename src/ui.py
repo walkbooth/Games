@@ -1,8 +1,9 @@
+# v1.11
 import sys, termios, tty 
-# v1.1
 import grid 
 import yaml
 import os
+import getpass
 
 """
 Gets a character or arrow key input from user. Thanks to Newb for the answer here: 
@@ -54,8 +55,10 @@ def clearscreen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def exitpoint():
-    print("Press enter to continue... \033[1;0;0m")
-    input()
+    print("Press q to continue... \033[1;0;0m")
+    choice = ""
+    while choice != "q":
+        choice = getchar()
     clearscreen()
     exit(0)
 
