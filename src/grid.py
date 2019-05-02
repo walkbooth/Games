@@ -33,7 +33,8 @@ class Grid ():
                         continue 
 
     """
-    Helper function to randomly generate valid locations for bombs based on game configuration. 
+    Helper function to randomly generate valid locations for bombs based on game configuration.
+    Algorith to get a 1D coordinate from a 2D coordinate: 1D = y * width + x 
     @return bombs a list of valid locations for bombs to be placed in the grid 
     """ 
     def _generate_bomb_locations(self):
@@ -43,11 +44,21 @@ class Grid ():
 
         # Locate and place bombs, excluding first tile from the potential bomb spots 
         valid_spots = set(range(0, self._width * self._height))
-        if not x == None and not y == None:
-            upper_left = (y - 1) * self._width + x - 1 
-            valid_spots -= set(list(range(upper_left, upper_left + 3)) +
-                               list(range(upper_left + self._width, upper_left + self._width + 3)) +
-                               list(range(upper_left + 2 * self._width, upper_left + 2 * self._width + 3)))    
+
+        # List of empty tiles based on initial selection
+        invalid_spots = []
+
+        # Get valid adjacent tiles 
+        for rows in range(y-1, y+2):
+            for cols in range(x-1, x+2):
+                try:
+                    self._get_tile(cols, rows)
+                    invalid_spots.append(rows * self._width + cols)
+                except IndexError:
+                    continue
+
+        # Remove guaranteed empty tiles from valid spots to place bombs
+        valid_spots -= set(invalid_spots)    
 
         bomb_spots = random.sample(valid_spots, self._num_bombs)
         return bomb_spots 
@@ -90,8 +101,8 @@ class Grid ():
     def begin(self):
         bomb_spots = self._generate_bomb_locations()
         for bomb_spot in bomb_spots:
-            x = int(bomb_spot / self._height)
-            y = int(bomb_spot % self._height)
+            y = int(bomb_spot / self._height)
+            x = int(bomb_spot % self._height)
             self._get_tile(x, y).convert_to_bomb()
             self._notify_adj_tiles(x, y)
 
